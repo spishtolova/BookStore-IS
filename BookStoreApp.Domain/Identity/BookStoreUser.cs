@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using BookStoreApp.Domain.Entities;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,5 +13,6 @@ namespace BookStoreApp.Domain.Identity
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
         public string? Address { get; set; }
+        public ShoppingCart? UserCart { get; set; }
     }
 }

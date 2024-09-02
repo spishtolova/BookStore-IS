@@ -8,6 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using BookStoreApp.Data;
 using BookStoreApp.Domain.Entities;
 using BookStoreApp.Service.Interface;
+using BookStoreApp.Domain.DTO;
+using BookStoreApp.Service.Implementation;
+using System.Security.Claims;
 
 namespace BookStoreApp.Web.Controllers
 {
@@ -15,11 +18,13 @@ namespace BookStoreApp.Web.Controllers
     {
         private readonly IAuthorService _authorSerivce;
         private readonly IBookService _bookSerivce;
+        private readonly IShoppingCartService _shoppingCartSerivce;
 
-        public BooksController(IAuthorService authorService, IBookService bookService)
+        public BooksController(IAuthorService authorService, IBookService bookService, IShoppingCartService shoppingCartSerivce)
         {
             _authorSerivce = authorService;
             _bookSerivce = bookService;
+            _shoppingCartSerivce = shoppingCartSerivce;
         }
 
         // GET: Books
@@ -151,6 +156,30 @@ namespace BookStoreApp.Web.Controllers
         private bool BookExists(Guid id)
         {
             return _bookSerivce.GetBookById(id) != null;
+        }
+
+        public IActionResult AddToCart(Guid Id)
+        {
+            var result = _shoppingCartSerivce.getBookInfo(Id);
+            if (result != null)
+            {
+                return View(result);
+            }
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult AddToCart(AddToCartDTO model)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var result = _shoppingCartSerivce.AddBookToShoppingCart(userId, model);
+
+            if (result != null)
+            {
+                return RedirectToAction("Index", "ShoppingCarts");
+            }
+            else { return View(model); }
         }
     }
 }

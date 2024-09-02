@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using BookStoreApp.Domain.Identity;
+using BookStoreApp.Domain.Entities;
 
 
 namespace BookStoreApp.Web.Areas.Identity.Pages.Account
@@ -121,7 +122,7 @@ namespace BookStoreApp.Web.Areas.Identity.Pages.Account
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
-                //user.UserCart = new ShoppingCart(); --- NEEDS TO BE IMPLEMENTED
+                user.UserCart = new ShoppingCart();
                 user.FirstName = Input.FirstName;
                 user.LastName = Input.LastName;
                 user.Address = Input.Address;

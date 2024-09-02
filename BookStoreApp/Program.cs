@@ -20,11 +20,11 @@ builder.Services.AddDefaultIdentity<BookStoreUser>(options => options.SignIn.Req
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+builder.Services.AddScoped(typeof(IUserRepository), typeof(UserRepository));
 
 builder.Services.AddTransient<IAuthorService, AuthorService>();
 builder.Services.AddTransient<IBookService, BookService>();
-
-
+builder.Services.AddTransient<IShoppingCartService, ShoppingCartService>();
 
 var app = builder.Build();
 
