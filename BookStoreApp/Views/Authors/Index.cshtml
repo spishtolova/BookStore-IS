@@ -1,41 +1,39 @@
-﻿@model IEnumerable<BookStoreApp.Domain.Entities.Author>
+﻿@model List<BookStoreApp.Domain.Entities.Author>
 
 @{
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1 class="text-center">Authors</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.surname)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.surname)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<div class="container">
+    <div class="m-3 text-center">
+        <a class="btn btn-success" asp-controller="Books" asp-action="Create">Add new author</a>
+    </div>
+
+    @for (int i = 0; i < Model.Count; i++)
+    {
+        var item = Model[i];
+        if (i % 3 == 0)
+        {
+            @:<div class="row mb-4">
+        }
+        <div class="col-md-4 d-flex justify-content-center mb-4">
+            <div class="card" style="width: 100%; max-width: 18rem; height: 25rem;border:none">
+                <img class="card-img-top" src="@item.imageURL" alt="Card image cap" style="height: 300px; object-fit: cover;">
+                <div class="card-body d-flex flex-column text-center">
+                    <h5 class="card-title">@item.name</h5>
+                    <p class="card-text">@item.surname</p>
+                </div>
+                <div class="card-footer d-flex justify-content-between">
+                    <a asp-controller="Authors" asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-info text-center">Details</a>
+                </div>
+            </div>
+        </div>
+
+        if (i % 3 == 2)
+        {
+            @:</div>
+        }
+    }
+</div>

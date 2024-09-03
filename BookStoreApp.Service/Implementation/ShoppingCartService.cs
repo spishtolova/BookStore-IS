@@ -1,5 +1,6 @@
 ﻿using BookStoreApp.Domain.DTO;
 using BookStoreApp.Domain.Entities;
+using BookStoreApp.Repository.Implementation;
 using BookStoreApp.Repository.Interface;
 using BookStoreApp.Service.Interface;
 using Microsoft.IdentityModel.Tokens;
@@ -17,12 +18,17 @@ namespace BookStoreApp.Service.Implementation
         private readonly IUserRepository _userRepository;
         private readonly IRepository<ShoppingCart> _shoppingCartRepository;
         private readonly IRepository<Book> _bookRepository;
+        private readonly IRepository<Order> _orderRepository;
+        private readonly IRepository<BookInOrder> _bookInOrderRepository;
 
-        public ShoppingCartService(IUserRepository userRepository, IRepository<ShoppingCart> shoppingCartRepository, IRepository<Book> bookRepository)
+
+        public ShoppingCartService(IUserRepository userRepository, IRepository<ShoppingCart> shoppingCartRepository, IRepository<Book> bookRepository, IRepository<Order> orderRepository, IRepository<BookInOrder> bookInOrderRepository)
         {
             _userRepository = userRepository;
             _shoppingCartRepository = shoppingCartRepository;
             _bookRepository = bookRepository;
+            _orderRepository = orderRepository;
+            _bookInOrderRepository = bookInOrderRepository;
         }
 
         public ShoppingCart AddBookToShoppingCart(string userId, AddToCartDTO model)
@@ -122,7 +128,47 @@ namespace BookStoreApp.Service.Implementation
 
         public bool orderBooks(string userId)
         {
-            throw new NotImplementedException();
+            if (userId != null)
+            {
+                var loggedInUser = _userRepository.Get(userId);
+
+                var userShoppingCart = loggedInUser.UserCart;
+
+                Order order = new Order
+                {
+                    Id = Guid.NewGuid(),
+                    ownerId = userId,
+                    owner = loggedInUser
+                };
+
+                _orderRepository.Insert(order);
+
+                List<BookInOrder> productInOrder = new List<BookInOrder>();
+
+                var lista = userShoppingCart.bookInShoppingCart.Select(
+                    x => new BookInOrder
+                    {
+                        Id = Guid.NewGuid(),
+                        bookId = x.bookId,
+                        orderedBook = x.book,
+                        orderId = order.Id,
+                        order = order,
+                        quantity = x.quantity
+                    }
+                    ).ToList();
+
+                productInOrder.AddRange(lista);
+
+                foreach (var product in productInOrder)
+                {
+                    _bookInOrderRepository.Insert(product);
+                }
+
+                loggedInUser.UserCart.bookInShoppingCart.Clear();
+                _userRepository.Update(loggedInUser);
+                return true;
+            }
+            return false;
         }
     }
 }

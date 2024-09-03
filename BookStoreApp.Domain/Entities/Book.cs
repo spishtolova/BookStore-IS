@@ -23,6 +23,7 @@ namespace BookStoreApp.Domain.Entities
         public Guid AuthorId { get; set; }
         public  Author? Author { get; set; }
         public virtual ICollection<BookInShoppingCart>? bookInShoppingCart { get; set; }
+        public virtual ICollection<BookInOrder>? bookInOrder { get; set; }
 
     }
 }
